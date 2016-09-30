@@ -9,11 +9,12 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class SaveIntent extends AppCompatActivity {
+public class SaveIntentActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SaveIntentReceiver.registerReceiver(this);
         setContentView(R.layout.activity_save_intent);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -22,10 +23,23 @@ public class SaveIntent extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SaveIntentReceiver.disableAndFlushQueue(view.getContext());
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SaveIntentReceiver.enableQueue();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SaveIntentReceiver.unregisterReceiver(this);
     }
 
     @Override
